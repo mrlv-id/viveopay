@@ -27,7 +27,21 @@ Deno.serve(async (req) => {
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
   const asaasApiKey = Deno.env.get('ASAAS_API_KEY')!;
   
-  const authHeader = req.headers.get('Authorization')!;
+  // Get JWT token from Authorization header
+  const authHeader = req.headers.get('Authorization');
+  console.log('Auth header presente:', !!authHeader);
+  
+  if (!authHeader) {
+    console.error('Nenhum header de autorização encontrado');
+    return new Response(
+      JSON.stringify({ error: 'Authorization header missing' }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+      }
+    );
+  }
+
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     global: { headers: { Authorization: authHeader } }
   });
@@ -35,8 +49,18 @@ Deno.serve(async (req) => {
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
+    console.log('Usuário autenticado:', user?.id);
+    console.log('Erro de autenticação:', authError);
+    
     if (authError || !user) {
-      throw new Error('Unauthorized');
+      console.error('Falha na autenticação:', authError?.message);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized', details: authError?.message }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401,
+        }
+      );
     }
 
     const rawBody = await req.json();
