@@ -9,12 +9,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { formatCpfCnpj, validateCpfCnpj } from "@/lib/cpfCnpjUtils";
+import { validatePixKey, getPixKeyTypeLabel } from "@/lib/pixUtils";
 
 export default function Perfil() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [cpfCnpjValidation, setCpfCnpjValidation] = useState<{ valid: boolean; message?: string }>({ valid: true });
+  const [pixValidation, setPixValidation] = useState<{ valid: boolean; type: string; message?: string }>({ 
+    valid: true, 
+    type: 'invalid' 
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     full_name: "",
@@ -136,12 +141,33 @@ export default function Perfil() {
     }
   };
 
+  const handlePixKeyChange = (value: string) => {
+    setFormData({ ...formData, pix_key: value });
+    
+    // Validar apenas se tiver conteúdo
+    if (value.trim().length > 0) {
+      const validation = validatePixKey(value);
+      setPixValidation(validation);
+    } else {
+      setPixValidation({ valid: true, type: 'invalid' });
+    }
+  };
+
   const handleSave = async () => {
     // Validar CPF/CNPJ antes de salvar
     if (formData.cpf_cnpj) {
       const validation = validateCpfCnpj(formData.cpf_cnpj);
       if (!validation.valid) {
         toast.error(validation.message || "CPF/CNPJ inválido");
+        return;
+      }
+    }
+
+    // Validar chave PIX antes de salvar
+    if (formData.pix_key) {
+      const validation = validatePixKey(formData.pix_key);
+      if (!validation.valid) {
+        toast.error(validation.message || "Chave PIX inválida");
         return;
       }
     }
@@ -284,16 +310,40 @@ export default function Perfil() {
 
           <div className="space-y-2">
             <Label htmlFor="pix">Chave PIX</Label>
-            <Input
-              id="pix"
-              value={formData.pix_key}
-              onChange={(e) =>
-                setFormData({ ...formData, pix_key: e.target.value })
-              }
-              placeholder="Sua chave PIX para receber saques"
-            />
+            <div className="relative">
+              <Input
+                id="pix"
+                value={formData.pix_key}
+                onChange={(e) => handlePixKeyChange(e.target.value)}
+                placeholder="Email, telefone, CPF, CNPJ ou chave aleatória"
+                className={
+                  formData.pix_key && !pixValidation.valid
+                    ? "border-destructive focus-visible:ring-destructive pr-10"
+                    : formData.pix_key && pixValidation.valid
+                    ? "border-green-500 focus-visible:ring-green-500 pr-10"
+                    : ""
+                }
+              />
+              {formData.pix_key && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {pixValidation.valid ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-destructive" />
+                  )}
+                </div>
+              )}
+            </div>
+            {formData.pix_key && pixValidation.valid && pixValidation.type !== 'invalid' && (
+              <p className="text-xs text-green-600 dark:text-green-400">
+                ✓ {getPixKeyTypeLabel(pixValidation.type as any)} detectado
+              </p>
+            )}
+            {formData.pix_key && !pixValidation.valid && pixValidation.message && (
+              <p className="text-xs text-destructive">{pixValidation.message}</p>
+            )}
             <p className="text-xs text-muted-foreground">
-              Necessária para solicitar saques. Pode ser email, telefone, CPF/CNPJ ou chave aleatória.
+              Necessária para solicitar saques. Aceita: email, telefone, CPF, CNPJ ou chave aleatória.
             </p>
           </div>
         </div>
