@@ -87,6 +87,12 @@ export default function Servicos() {
       return;
     }
 
+    const priceValue = parseFloat(formData.price);
+    if (priceValue < 5) {
+      toast.error("O valor mínimo para criar um serviço é R$ 5,00");
+      return;
+    }
+
     setLoading(true);
     try {
       const { error } = await supabase.from("services").insert({
@@ -241,12 +247,19 @@ export default function Servicos() {
                   id="valor"
                   type="number"
                   step="0.01"
-                  placeholder="0,00"
+                  placeholder="5.00"
+                  min="5.00"
                   value={formData.price}
                   onChange={(e) =>
                     setFormData({ ...formData, price: e.target.value })
                   }
                 />
+                {formData.price && parseFloat(formData.price) < 5 && (
+                  <p className="text-xs text-amber-600 flex items-center gap-1">
+                    <span className="inline-block w-1 h-1 rounded-full bg-amber-600"></span>
+                    Valor mínimo R$ 5,00
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="duracao">Tempo de Sessão (minutos)</Label>
@@ -326,57 +339,69 @@ export default function Servicos() {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => (
-            <Card key={service.id} className="p-6 bg-card border-border">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold mb-1">{service.title}</h3>
-                  <p className="text-2xl font-bold text-primary">
-                    {formatPrice(service.price_cents)}
-                  </p>
-                </div>
+          {services.map((service) => {
+            const isValueTooLow = service.price_cents < 500; // R$ 5,00
+            
+            return (
+              <Card key={service.id} className="p-6 bg-card border-border">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1">{service.title}</h3>
+                    <p className="text-2xl font-bold text-primary">
+                      {formatPrice(service.price_cents)}
+                    </p>
+                    {isValueTooLow && (
+                      <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                        <span className="inline-block w-1 h-1 rounded-full bg-amber-600"></span>
+                        Valor mínimo R$ 5,00
+                      </p>
+                    )}
+                  </div>
 
-                {service.description && (
-                  <p className="text-sm text-muted-foreground">
-                    {service.description}
-                  </p>
-                )}
-
-                <div className="flex flex-wrap gap-2 text-sm">
-                  {service.duration_minutes && (
-                    <span className="px-2 py-1 bg-secondary rounded">
-                      {service.duration_minutes} min
-                    </span>
+                  {service.description && (
+                    <p className="text-sm text-muted-foreground">
+                      {service.description}
+                    </p>
                   )}
-                  {service.modality && (
-                    <span className="px-2 py-1 bg-secondary rounded capitalize">
-                      {service.modality}
-                    </span>
-                  )}
-                </div>
 
-                <div className="flex gap-2">
-                  <Button
-                    className="flex-1 bg-primary hover:bg-primary/90"
-                    onClick={() => {
-                      setSelectedService(service);
-                      setPaymentDialogOpen(true);
-                    }}
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Gerar Link
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleDeleteService(service.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex flex-wrap gap-2 text-sm">
+                    {service.duration_minutes && (
+                      <span className="px-2 py-1 bg-secondary rounded">
+                        {service.duration_minutes} min
+                      </span>
+                    )}
+                    {service.modality && (
+                      <span className="px-2 py-1 bg-secondary rounded capitalize">
+                        {service.modality}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      className="flex-1 bg-primary hover:bg-primary/90"
+                      onClick={() => {
+                        setSelectedService(service);
+                        setPaymentDialogOpen(true);
+                      }}
+                      disabled={isValueTooLow}
+                      title={isValueTooLow ? "Valor mínimo para gerar link: R$ 5,00" : ""}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Gerar Link
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleDeleteService(service.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
 
