@@ -22,6 +22,7 @@ export function Layout({
   const [profile, setProfile] = useState<{
     full_name: string;
     avatar_url: string | null;
+    cpf_cnpj: string | null;
   } | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
   useEffect(() => {
@@ -29,7 +30,7 @@ export function Layout({
       if (!user) return;
       const {
         data
-      } = await supabase.from('profiles').select('full_name, avatar_url').eq('id', user.id).single();
+      } = await supabase.from('profiles').select('full_name, avatar_url, cpf_cnpj').eq('id', user.id).single();
       if (data) {
         setProfile(data);
       }
@@ -56,6 +57,14 @@ export function Layout({
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
+
+  const getPersonType = () => {
+    if (!profile?.cpf_cnpj) return null;
+    const numbers = profile.cpf_cnpj.replace(/\D/g, '');
+    if (numbers.length === 11) return 'PF';
+    if (numbers.length === 14) return 'PJ';
+    return null;
+  };
   return <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
@@ -81,7 +90,9 @@ export function Layout({
                     <p className="text-sm font-medium text-foreground">
                       {profile?.full_name || 'Usuário'}
                     </p>
-                    <p className="text-xs text-muted-foreground">PF</p>
+                    {getPersonType() && (
+                      <p className="text-xs text-muted-foreground">{getPersonType()}</p>
+                    )}
                   </div>
                 </button>
               </DropdownMenuTrigger>
