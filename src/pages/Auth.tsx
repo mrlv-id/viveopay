@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import logoViveo from "@/assets/logo-viveo.png";
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -84,8 +85,12 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
-            <span className="text-primary-foreground font-bold text-3xl">V</span>
+          <div className="flex justify-center mb-4">
+            <img 
+              src={logoViveo} 
+              alt="Viveo" 
+              className="h-16 w-auto object-contain"
+            />
           </div>
           <h1 className="text-3xl font-bold mb-2">Bem-vindo à Viveo</h1>
           <p className="text-muted-foreground">

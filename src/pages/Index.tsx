@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, BarChart3, Wallet, Zap, Shield, TrendingUp, DollarSign } from "lucide-react";
+import logoViveo from "@/assets/logo-viveo.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -12,10 +13,11 @@ const Index = () => {
       <header className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">V</span>
-            </div>
-            <span className="text-xl font-bold">Viveo</span>
+            <img 
+              src={logoViveo} 
+              alt="Viveo" 
+              className="h-8 w-auto object-contain"
+            />
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Funcionalidades</a>
@@ -308,10 +310,11 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">V</span>
-              </div>
-              <span className="text-xl font-bold">Viveo</span>
+              <img 
+                src={logoViveo} 
+                alt="Viveo" 
+                className="h-8 w-auto object-contain"
+              />
             </div>
             
             <p className="text-sm text-muted-foreground">
