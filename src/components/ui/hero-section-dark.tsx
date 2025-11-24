@@ -86,9 +86,9 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
           >
             <RetroGrid {...gridOptions} />
             <div 
-              className="max-w-screen-xl z-10 mx-auto px-4 py-28 gap-12 md:px-8"
+              className="max-w-screen-xl z-10 mx-auto px-4 py-28 gap-12 md:px-8 animate-fade-in"
             >
-              <div className="space-y-5 max-w-3xl leading-0 lg:leading-5 mx-auto text-center">
+              <div className="space-y-5 max-w-3xl leading-0 lg:leading-5 mx-auto text-center [animation-delay:100ms] animate-fade-in">
                 <h1 className="text-sm text-muted-foreground group font-sans mx-auto px-5 py-2 bg-gradient-to-tr from-muted/40 via-muted/30 to-transparent border-[2px] border-border/30 rounded-3xl w-fit">
                   {title}
                   <ChevronRight className="inline w-4 h-4 ml-2 group-hover:translate-x-1 duration-300" />
@@ -126,7 +126,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
                 </div>
               </div>
               {bottomImage && (
-                <div className="mt-16 md:mt-32 mx-2 sm:mx-6 md:mx-10 relative z-10">
+                <div className="mt-16 md:mt-32 mx-2 sm:mx-6 md:mx-10 relative z-10 animate-fade-in [animation-delay:200ms]">
                   <img
                     src={bottomImage.light}
                     className="w-full shadow-lg rounded-lg border border-border light:block dark:hidden"
