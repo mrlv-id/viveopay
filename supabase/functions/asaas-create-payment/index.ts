@@ -157,6 +157,8 @@ Deno.serve(async (req) => {
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 7); // Vencimento em 7 dias
 
+    console.log('Criando cobrança no Asaas com valor:', service.price_cents / 100);
+
     const paymentData = {
       customer: customerId,
       billingType: 'UNDEFINED', // Permite o cliente escolher
@@ -166,7 +168,7 @@ Deno.serve(async (req) => {
       externalReference: serviceId,
     };
 
-    console.log('Criando cobrança no Asaas:', paymentData);
+    console.log('Payload completo para Asaas:', JSON.stringify(paymentData));
 
     const paymentResponse = await fetch(`${ASAAS_API_URL}/payments`, {
       method: 'POST',
@@ -178,9 +180,26 @@ Deno.serve(async (req) => {
     });
 
     if (!paymentResponse.ok) {
-      const errorText = await paymentResponse.text();
-      console.error('Erro ao criar cobrança no Asaas:', errorText);
-      throw new Error('Erro ao criar cobrança no Asaas');
+      const errorData = await paymentResponse.json();
+      console.error('Erro ao criar cobrança no Asaas:', JSON.stringify(errorData));
+      
+      // Extrair mensagem de erro mais específica
+      let errorMessage = 'Erro ao criar cobrança no Asaas';
+      if (errorData.errors && errorData.errors.length > 0) {
+        errorMessage = errorData.errors[0].description || errorMessage;
+      }
+      
+      return new Response(
+        JSON.stringify({ 
+          error: 'Erro ao criar cobrança no Asaas',
+          details: errorMessage,
+          asaasError: errorData
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
     }
 
     const payment = await paymentResponse.json();

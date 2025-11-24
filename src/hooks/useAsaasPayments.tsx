@@ -41,7 +41,10 @@ export const useAsaasPayments = () => {
       console.log('Response error:', response.error);
 
       if (response.error) {
-        throw response.error;
+        // Tentar extrair mensagem específica do erro do Asaas
+        const errorMessage = response.data?.details || response.data?.error || 'Erro ao gerar link de pagamento';
+        toast.error(errorMessage);
+        return null;
       }
 
       toast.success('Link de pagamento gerado com sucesso!');
