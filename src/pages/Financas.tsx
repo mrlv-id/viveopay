@@ -9,6 +9,8 @@ import { toast } from "sonner";
 interface Transaction {
   id: string;
   amount_cents: number;
+  fee_value: number;
+  net_value: number;
   status: string;
   payment_method: string | null;
   payer_name: string | null;
@@ -35,6 +37,9 @@ export default function Financas() {
     available: 0,
     withdrawn: 0,
     processing: 0,
+    totalBruto: 0,
+    totalTaxas: 0,
+    totalLiquido: 0,
   });
 
   useEffect(() => {
@@ -79,9 +84,13 @@ export default function Financas() {
 
   const calculateStats = (transactions: Transaction[]) => {
     const paid = transactions.filter((t) => t.status === "paid");
-    const totalPaid = paid.reduce((sum, t) => sum + t.amount_cents, 0);
     
-    // Calcular saques processados
+    // Calcular totais bruto, taxas e líquido
+    const totalBruto = paid.reduce((sum, t) => sum + t.amount_cents, 0);
+    const totalTaxas = paid.reduce((sum, t) => sum + t.fee_value, 0);
+    const totalLiquido = paid.reduce((sum, t) => sum + t.net_value, 0);
+    
+    // Calcular saques processados (baseado em net_value)
     const withdrawnAmount = payouts
       .filter((p) => p.status === "processed")
       .reduce((sum, p) => sum + p.amount_cents, 0);
@@ -92,9 +101,12 @@ export default function Financas() {
       .reduce((sum, p) => sum + p.amount_cents, 0);
 
     setStats({
-      available: (totalPaid - withdrawnAmount - processingAmount) / 100,
+      available: (totalLiquido - withdrawnAmount - processingAmount) / 100,
       withdrawn: withdrawnAmount / 100,
       processing: processingAmount / 100,
+      totalBruto: totalBruto / 100,
+      totalTaxas: totalTaxas / 100,
+      totalLiquido: totalLiquido / 100,
     });
   };
 
@@ -153,7 +165,7 @@ export default function Financas() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="p-6 bg-card border-border">
-          <p className="text-sm text-muted-foreground mb-1">Saldo Total</p>
+          <p className="text-sm text-muted-foreground mb-1">Saldo Disponível</p>
           <h3 className="text-3xl font-bold mb-2">
             {stats.available.toLocaleString("pt-BR", {
               style: "currency",
@@ -164,6 +176,41 @@ export default function Financas() {
         </Card>
 
         <Card className="p-6 bg-card border-border">
+          <p className="text-sm text-muted-foreground mb-1">Total Recebido (Bruto)</p>
+          <h3 className="text-3xl font-bold mb-2">
+            {stats.totalBruto.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </h3>
+          <p className="text-xs text-muted-foreground">Valor total das vendas</p>
+        </Card>
+
+        <Card className="p-6 bg-card border-border">
+          <p className="text-sm text-muted-foreground mb-1">Total de Taxas (5%)</p>
+          <h3 className="text-3xl font-bold mb-2">
+            {stats.totalTaxas.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </h3>
+          <p className="text-xs text-muted-foreground">Taxa da plataforma</p>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="p-6 bg-card border-border">
+          <p className="text-sm text-muted-foreground mb-1">Total Líquido</p>
+          <h3 className="text-3xl font-bold mb-2">
+            {stats.totalLiquido.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </h3>
+          <p className="text-xs text-muted-foreground">Valor após taxas</p>
+        </Card>
+
+        <Card className="p-6 bg-card border-border">
           <p className="text-sm text-muted-foreground mb-1">Saques Realizados</p>
           <h3 className="text-3xl font-bold mb-2">
             {stats.withdrawn.toLocaleString("pt-BR", {
@@ -171,7 +218,7 @@ export default function Financas() {
               currency: "BRL",
             })}
           </h3>
-          <p className="text-xs text-muted-foreground">Total no período</p>
+          <p className="text-xs text-muted-foreground">Total sacado</p>
         </Card>
 
         <Card className="p-6 bg-card border-border">
