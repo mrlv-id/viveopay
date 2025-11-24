@@ -9,6 +9,7 @@ import {
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import logoDark from "@/assets/logo-viveo-dark.png";
 import {
   Sidebar,
   SidebarContent,
@@ -40,11 +41,18 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarContent>
-        <div className="p-4 flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-lg">V</span>
-          </div>
-          {open && <span className="font-bold text-xl">Viveo</span>}
+        <div className="p-4 flex items-center justify-center gap-2 min-h-[60px]">
+          {open ? (
+            <img 
+              src={logoDark} 
+              alt="Viveo" 
+              className="h-10 w-auto object-contain dark:block hidden"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-lg">V</span>
+            </div>
+          )}
         </div>
 
         <SidebarGroup>
