@@ -152,6 +152,22 @@ Deno.serve(async (req) => {
       }
 
       console.log(`Transação ${existingTransaction.id} atualizada para status: ${mappedStatus}`);
+
+      // Enviar notificação por email se o pagamento foi confirmado
+      if (mappedStatus === 'paid') {
+        console.log('Enviando notificação de pagamento por email...');
+        
+        // Chamar edge function de notificação de forma assíncrona (não bloqueia o webhook)
+        supabase.functions.invoke('send-payment-notification', {
+          body: { transactionId: existingTransaction.id },
+        }).then(({ error: notificationError }) => {
+          if (notificationError) {
+            console.error('Erro ao enviar notificação:', notificationError);
+          } else {
+            console.log('Notificação enviada com sucesso');
+          }
+        });
+      }
     } else {
       console.log('Transação não encontrada para este pagamento');
     }
