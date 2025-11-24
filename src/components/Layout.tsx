@@ -41,6 +41,27 @@ export function Layout({ children }: LayoutProps) {
     };
 
     loadProfile();
+
+    // Listener para atualizar avatar em tempo real
+    const channel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user?.id}`,
+        },
+        (payload) => {
+          setProfile(payload.new as any);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const toggleTheme = () => {

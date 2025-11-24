@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Camera, Loader2 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -12,6 +12,8 @@ import { toast } from "sonner";
 export default function Perfil() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -50,6 +52,72 @@ export default function Perfil() {
     } catch (error) {
       console.error("Erro ao carregar perfil:", error);
       toast.error("Erro ao carregar perfil");
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+
+      const file = event.target.files[0];
+      
+      // Validar tamanho (máx 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("A imagem deve ter no máximo 5MB");
+        return;
+      }
+
+      // Validar tipo
+      if (!file.type.startsWith('image/')) {
+        toast.error("Apenas imagens são permitidas");
+        return;
+      }
+
+      setUploading(true);
+
+      // Deletar avatar antigo se existir
+      if (formData.avatar_url) {
+        const oldPath = formData.avatar_url.split('/').pop();
+        if (oldPath) {
+          await supabase.storage
+            .from('avatars')
+            .remove([`${user?.id}/${oldPath}`]);
+        }
+      }
+
+      // Upload nova imagem
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${user?.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Obter URL pública
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Atualizar perfil
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user?.id);
+
+      if (updateError) throw updateError;
+
+      setFormData({ ...formData, avatar_url: publicUrl });
+      toast.success("Foto de perfil atualizada!");
+    } catch (error) {
+      console.error("Erro ao fazer upload:", error);
+      toast.error("Erro ao fazer upload da imagem");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -93,17 +161,31 @@ export default function Perfil() {
                 {formData.full_name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+              disabled={uploading}
+            />
             <Button
               size="icon"
               className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-primary hover:bg-primary/90"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
             >
-              <Camera className="h-4 w-4" />
+              {uploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Camera className="h-4 w-4" />
+              )}
             </Button>
           </div>
           <div>
             <h3 className="text-xl font-semibold mb-1">Foto de Perfil</h3>
             <p className="text-sm text-muted-foreground">
-              Clique no ícone para alterar sua foto
+              Clique no ícone para alterar sua foto (máx. 5MB)
             </p>
           </div>
         </div>
