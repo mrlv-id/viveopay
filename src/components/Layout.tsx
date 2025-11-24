@@ -62,7 +62,6 @@ export function Layout({
         <main className="flex-1 flex flex-col">
           <header className="h-14 border-b border-border flex items-center justify-between px-6">
             <div className="flex items-center gap-4">
-              <SidebarTrigger className="mr-2" />
               
             </div>
             
