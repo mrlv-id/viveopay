@@ -1,5 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { BottomNav } from "@/components/BottomNav";
 import { ReactNode, useEffect, useState } from "react";
 import { User, HelpCircle, Moon, Sun, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logoViveo from "@/assets/logo-viveo.png";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
+import { useIsMobile } from "@/hooks/use-mobile";
 interface LayoutProps {
   children: ReactNode;
 }
@@ -19,6 +21,7 @@ export function Layout({
     user
   } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [profile, setProfile] = useState<{
     full_name: string;
     avatar_url: string | null;
@@ -68,7 +71,7 @@ export function Layout({
   };
   return <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
+        {!isMobile && <AppSidebar />}
         <main className="flex-1 flex flex-col">
           <header className="h-14 border-b border-border flex items-center justify-between px-6">
             <div className="flex items-center gap-4">
@@ -120,10 +123,11 @@ export function Layout({
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <div className="flex-1 p-6">
+          <div className={`flex-1 p-6 ${isMobile ? 'pb-20' : ''}`}>
             {children}
           </div>
         </main>
+        {isMobile && <BottomNav />}
       </div>
     </SidebarProvider>;
 }
