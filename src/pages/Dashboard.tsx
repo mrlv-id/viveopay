@@ -13,6 +13,22 @@ interface DashboardStats {
   monthWithdrawn: number;
 }
 
+interface Transaction {
+  id: string;
+  amount_cents: number;
+  net_value: number;
+  status: string;
+  payer_name: string | null;
+  created_at: string;
+}
+
+interface Payout {
+  id: string;
+  amount_cents: number;
+  status: string;
+  created_at: string;
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats>({
@@ -23,6 +39,8 @@ export default function Dashboard() {
     monthReceived: 0,
     monthWithdrawn: 0,
   });
+  const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
+  const [recentPayouts, setRecentPayouts] = useState<Payout[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -37,7 +55,8 @@ export default function Dashboard() {
         .from("transactions")
         .select("*")
         .eq("user_id", user?.id)
-        .eq("status", "paid");
+        .eq("status", "paid")
+        .order("created_at", { ascending: false });
 
       // Buscar saques do mês
       const startOfMonth = new Date();
@@ -50,6 +69,14 @@ export default function Dashboard() {
         .eq("user_id", user?.id)
         .eq("status", "processed")
         .gte("created_at", startOfMonth.toISOString());
+
+      // Buscar todos os payouts para histórico
+      const { data: allPayouts } = await supabase
+        .from("payouts")
+        .select("*")
+        .eq("user_id", user?.id)
+        .order("created_at", { ascending: false })
+        .limit(5);
 
       const totalBruto = transactions?.reduce((sum, t) => sum + t.amount_cents, 0) || 0;
       const totalTaxas = transactions?.reduce((sum, t) => sum + t.fee_value, 0) || 0;
@@ -64,9 +91,38 @@ export default function Dashboard() {
         monthReceived: totalLiquido / 100,
         monthWithdrawn: monthWithdrawn / 100,
       });
+
+      // Definir transações e saques recentes
+      setRecentTransactions(transactions?.slice(0, 5) || []);
+      setRecentPayouts(allPayouts || []);
     } catch (error) {
       console.error("Erro ao carregar estatísticas:", error);
     }
+  };
+
+  const formatPrice = (cents: number) => {
+    return (cents / 100).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      paid: "Pago",
+      pending: "Pendente",
+      processed: "Processado",
+    };
+    return labels[status] || status;
   };
   return (
     <div className="space-y-8">
@@ -144,16 +200,70 @@ export default function Dashboard() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="p-6 bg-card border-border">
           <h3 className="text-lg font-semibold mb-4">Transações Recentes</h3>
-          <div className="text-center py-8 text-muted-foreground">
-            Nenhuma transação ainda
-          </div>
+          {recentTransactions.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Nenhuma transação ainda
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {recentTransactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg"
+                >
+                  <div>
+                    <p className="font-medium text-sm">
+                      {transaction.payer_name || "Cliente"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDate(transaction.created_at)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold">
+                      {formatPrice(transaction.amount_cents)}
+                    </p>
+                    <p className="text-xs text-green-600">
+                      {getStatusLabel(transaction.status)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </Card>
 
         <Card className="p-6 bg-card border-border">
-          <h3 className="text-lg font-semibold mb-4">Pagamentos Recentes</h3>
-          <div className="text-center py-8 text-muted-foreground">
-            Nenhum pagamento ainda
-          </div>
+          <h3 className="text-lg font-semibold mb-4">Saques Recentes</h3>
+          {recentPayouts.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Nenhum saque ainda
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {recentPayouts.map((payout) => (
+                <div
+                  key={payout.id}
+                  className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg"
+                >
+                  <div>
+                    <p className="font-medium text-sm">Saque PIX</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDate(payout.created_at)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold">
+                      {formatPrice(payout.amount_cents)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {getStatusLabel(payout.status)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </Card>
       </div>
     </div>
