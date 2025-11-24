@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import logoViveo from "@/assets/logo-viveo.png";
 import { Eye, EyeOff, AtSign, ChevronLeft, Grid2x2Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { Label } from "@/components/ui/label";
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +22,8 @@ export default function Auth() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
   const { signUp, signIn, user } = useAuth();
   const navigate = useNavigate();
 
@@ -88,6 +92,35 @@ export default function Auth() {
       setPassword("");
     } catch (error) {
       // Error já tratado no useAuth
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!resetEmail.trim() || !resetEmail.includes("@")) {
+      toast.error("Email inválido");
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/auth?reset=true`,
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Email de recuperação enviado! Verifique sua caixa de entrada.");
+        setShowResetModal(false);
+        setResetEmail("");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar email de recuperação:", error);
+      toast.error("Erro ao enviar email de recuperação");
     } finally {
       setIsLoading(false);
     }
@@ -242,6 +275,18 @@ export default function Auth() {
             </Button>
           </form>
 
+          {!isSignUp && (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setShowResetModal(true)}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                Esqueceu sua senha?
+              </button>
+            </div>
+          )}
+
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
               {isSignUp ? "Já tem uma conta? " : "Não tem uma conta? "}
@@ -283,6 +328,53 @@ export default function Auth() {
           )}
         </div>
       </div>
+
+      {/* Modal de Recuperação de Senha */}
+      <Dialog open={showResetModal} onOpenChange={setShowResetModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Recuperar Senha</DialogTitle>
+            <DialogDescription>
+              Digite seu email para receber um link de recuperação
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleResetPassword} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="reset-email">Email</Label>
+              <div className="relative">
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  required
+                  className="peer ps-9 h-11"
+                />
+                <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
+                  <AtSign className="size-4" />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Enviaremos um link para redefinir sua senha
+              </p>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowResetModal(false)}
+                disabled={isLoading}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Enviando..." : "Enviar link"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Modal de Termos e Condições */}
       <Dialog open={showTermsModal} onOpenChange={setShowTermsModal}>
