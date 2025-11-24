@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,11 +24,31 @@ export default function Auth() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validações
+    if (!fullName.trim() || fullName.length < 3) {
+      toast.error("Nome deve ter pelo menos 3 caracteres");
+      return;
+    }
+    
+    if (!email.trim() || !email.includes("@")) {
+      toast.error("Email inválido");
+      return;
+    }
+    
+    if (password.length < 6) {
+      toast.error("Senha deve ter pelo menos 6 caracteres");
+      return;
+    }
+    
     setIsLoading(true);
     try {
       await signUp(email, password, fullName);
+      setEmail("");
+      setPassword("");
+      setFullName("");
     } catch (error) {
-      console.error(error);
+      // Error já tratado no useAuth
     } finally {
       setIsLoading(false);
     }
@@ -36,11 +56,25 @@ export default function Auth() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validações
+    if (!email.trim() || !email.includes("@")) {
+      toast.error("Email inválido");
+      return;
+    }
+    
+    if (!password.trim()) {
+      toast.error("Senha é obrigatória");
+      return;
+    }
+    
     setIsLoading(true);
     try {
       await signIn(email, password);
+      setEmail("");
+      setPassword("");
     } catch (error) {
-      console.error(error);
+      // Error já tratado no useAuth
     } finally {
       setIsLoading(false);
     }
