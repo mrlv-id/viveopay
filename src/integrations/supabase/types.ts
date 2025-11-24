@@ -149,7 +149,9 @@ export type Database = {
           checkout_url: string | null
           created_at: string
           external_id: string | null
+          fee_value: number
           id: string
+          net_value: number
           paid_at: string | null
           payer_email: string | null
           payer_name: string | null
@@ -166,7 +168,9 @@ export type Database = {
           checkout_url?: string | null
           created_at?: string
           external_id?: string | null
+          fee_value: number
           id?: string
+          net_value: number
           paid_at?: string | null
           payer_email?: string | null
           payer_name?: string | null
@@ -183,7 +187,9 @@ export type Database = {
           checkout_url?: string | null
           created_at?: string
           external_id?: string | null
+          fee_value?: number
           id?: string
+          net_value?: number
           paid_at?: string | null
           payer_email?: string | null
           payer_name?: string | null

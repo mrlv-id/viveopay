@@ -134,6 +134,17 @@ Deno.serve(async (req) => {
     const payment = await paymentResponse.json();
     console.log('Cobrança criada:', payment);
 
+    // Calcular taxa da Viveo (5%)
+    const feePercent = 0.05;
+    const feeValue = Math.floor(service.price_cents * feePercent);
+    const netValue = service.price_cents - feeValue;
+
+    console.log('Valores calculados:', {
+      amount_cents: service.price_cents,
+      fee_value: feeValue,
+      net_value: netValue,
+    });
+
     // Criar transação no banco de dados
     const { data: transaction, error: transactionError } = await supabase
       .from('transactions')
@@ -141,6 +152,8 @@ Deno.serve(async (req) => {
         user_id: user.id,
         service_id: serviceId,
         amount_cents: service.price_cents,
+        fee_value: feeValue,
+        net_value: netValue,
         status: 'pending',
         external_id: serviceId,
         asaas_payment_id: payment.id,
