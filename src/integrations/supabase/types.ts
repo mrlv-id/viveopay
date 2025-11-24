@@ -60,6 +60,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          asaas_customer_id: string | null
           avatar_url: string | null
           cpf_cnpj: string | null
           created_at: string
@@ -70,6 +71,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          asaas_customer_id?: string | null
           avatar_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
@@ -80,6 +82,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          asaas_customer_id?: string | null
           avatar_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
@@ -141,6 +144,8 @@ export type Database = {
       transactions: {
         Row: {
           amount_cents: number
+          asaas_invoice_url: string | null
+          asaas_payment_id: string | null
           checkout_url: string | null
           created_at: string
           external_id: string | null
@@ -156,6 +161,8 @@ export type Database = {
         }
         Insert: {
           amount_cents: number
+          asaas_invoice_url?: string | null
+          asaas_payment_id?: string | null
           checkout_url?: string | null
           created_at?: string
           external_id?: string | null
@@ -171,6 +178,8 @@ export type Database = {
         }
         Update: {
           amount_cents?: number
+          asaas_invoice_url?: string | null
+          asaas_payment_id?: string | null
           checkout_url?: string | null
           created_at?: string
           external_id?: string | null
