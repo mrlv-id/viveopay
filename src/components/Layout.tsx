@@ -25,6 +25,7 @@ export function Layout({
     cpf_cnpj: string | null;
   } | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   useEffect(() => {
     const loadProfile = async () => {
       if (!user) return;
@@ -74,7 +75,7 @@ export function Layout({
               
             </div>
             
-            <DropdownMenu>
+            <DropdownMenu onOpenChange={setIsDropdownOpen}>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                   <Avatar className="h-9 w-9 cursor-pointer aspect-square">
@@ -94,7 +95,7 @@ export function Layout({
                       <p className="text-xs text-muted-foreground">{getPersonType()}</p>
                     )}
                   </div>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground hidden sm:block transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-popover">
