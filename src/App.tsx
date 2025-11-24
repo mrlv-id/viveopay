@@ -14,6 +14,7 @@ import Financas from "./pages/Financas";
 import Servicos from "./pages/Servicos";
 import Perfil from "./pages/Perfil";
 import Indicacao from "./pages/Indicacao";
+import CentralAjuda from "./pages/CentralAjuda";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -73,6 +74,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Layout><Indicacao /></Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/central-ajuda"
+              element={
+                <ProtectedRoute>
+                  <Layout><CentralAjuda /></Layout>
                 </ProtectedRoute>
               }
             />

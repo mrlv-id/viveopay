@@ -3,17 +3,17 @@ import {
   Wallet, 
   LineChart, 
   Briefcase, 
-  User, 
-  Users 
+  Users,
+  LogOut
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -29,13 +29,13 @@ const mainItems = [
 ];
 
 const bottomItems = [
-  { title: "Perfil", url: "/perfil", icon: User },
   { title: "Indique um amigo", url: "/indicacao", icon: Users },
 ];
 
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
+  const { signOut } = useAuth();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
@@ -87,6 +87,12 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={signOut}>
+                  <LogOut className="h-5 w-5" />
+                  <span>Sair</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
