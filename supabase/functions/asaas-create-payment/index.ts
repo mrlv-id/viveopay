@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
   }
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const asaasApiKey = Deno.env.get('ASAAS_API_KEY')!;
   
   // Get JWT token from Authorization header
@@ -42,12 +42,22 @@ Deno.serve(async (req) => {
     );
   }
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    global: { headers: { Authorization: authHeader } }
+  // Create Supabase client with the user's JWT
+  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    global: { 
+      headers: { 
+        Authorization: authHeader 
+      } 
+    },
+    auth: {
+      persistSession: false
+    }
   });
 
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    // Verify the user's JWT token
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     console.log('Usuário autenticado:', user?.id);
     console.log('Erro de autenticação:', authError);
