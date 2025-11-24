@@ -2,12 +2,32 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, BarChart3, Wallet, Zap, Shield, TrendingUp, DollarSign } from "lucide-react";
+import { motion } from "framer-motion";
 import logoViveo from "@/assets/logo-viveo.png";
 import dashboardPreview from "@/assets/dashboard-preview.png";
 import { HeroSection } from "@/components/ui/hero-section-dark";
 
 const Index = () => {
   const navigate = useNavigate();
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6 }
+    }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -56,10 +76,20 @@ const Index = () => {
       />
 
       {/* Interesse - Problemas */}
-      <section id="features" className="py-20 md:py-32 relative overflow-hidden">
+      <motion.section 
+        id="features" 
+        className="py-20 md:py-32 relative overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={fadeInUp}
+      >
         <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
         <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-16 space-y-4">
+          <motion.div 
+            className="text-center mb-16 space-y-4"
+            variants={fadeInUp}
+          >
             <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
               <span className="text-sm text-primary font-medium">Problemas Comuns</span>
             </div>
@@ -69,9 +99,15 @@ const Index = () => {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Sabemos que gerenciar pagamentos e finanças pode ser complicado. Por isso criamos a Viveo.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div 
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             {[
               {
                 icon: Wallet,
@@ -94,26 +130,37 @@ const Index = () => {
                 description: "Horas gastas cobrando manualmente e organizando planilhas"
               }
             ].map((problem, index) => (
-              <Card 
-                key={index} 
-                className="group p-6 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/10"
-              >
+              <motion.div key={index} variants={fadeInUp}>
+                <Card 
+                  className="group p-6 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/10"
+                >
                 <div className="p-3 rounded-lg bg-primary/10 w-fit mb-4 group-hover:bg-primary/20 transition-colors">
                   <problem.icon className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{problem.title}</h3>
                 <p className="text-sm text-muted-foreground">{problem.description}</p>
               </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Desejo - Soluções */}
-      <section id="benefits" className="py-20 md:py-32 relative overflow-hidden">
+      <motion.section 
+        id="benefits" 
+        className="py-20 md:py-32 relative overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={fadeInUp}
+      >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,hsl(var(--primary)/.1),transparent)]" />
         <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-16 space-y-4">
+          <motion.div 
+            className="text-center mb-16 space-y-4"
+            variants={fadeInUp}
+          >
             <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
               <span className="text-sm text-primary font-medium">Soluções Completas</span>
             </div>
@@ -123,11 +170,18 @@ const Index = () => {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Tudo que você precisa para receber, gerenciar e crescer seu consultório.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-6">
-            <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
-              <div className="flex items-start gap-4">
+          <motion.div 
+            className="grid lg:grid-cols-2 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            <motion.div variants={fadeInUp}>
+              <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
+                <div className="flex items-start gap-4">
                 <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   <Zap className="h-6 w-6 text-primary" />
                 </div>
@@ -139,9 +193,11 @@ const Index = () => {
                 </div>
               </div>
             </Card>
+            </motion.div>
 
-            <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
-              <div className="flex items-start gap-4">
+            <motion.div variants={fadeInUp}>
+              <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
+                <div className="flex items-start gap-4">
                 <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
@@ -153,9 +209,11 @@ const Index = () => {
                 </div>
               </div>
             </Card>
+            </motion.div>
 
-            <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
-              <div className="flex items-start gap-4">
+            <motion.div variants={fadeInUp}>
+              <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
+                <div className="flex items-start gap-4">
                 <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   <DollarSign className="h-6 w-6 text-primary" />
                 </div>
@@ -167,9 +225,11 @@ const Index = () => {
                 </div>
               </div>
             </Card>
+            </motion.div>
 
-            <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
-              <div className="flex items-start gap-4">
+            <motion.div variants={fadeInUp}>
+              <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
+                <div className="flex items-start gap-4">
                 <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   <TrendingUp className="h-6 w-6 text-primary" />
                 </div>
@@ -181,16 +241,27 @@ const Index = () => {
                 </div>
               </div>
             </Card>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Ação - CTA Final */}
-      <section id="pricing" className="py-20 md:py-32 relative overflow-hidden">
+      <motion.section 
+        id="pricing" 
+        className="py-20 md:py-32 relative overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={fadeInUp}
+      >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,hsl(var(--primary)/.15),transparent)]" />
         
         <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
+          <motion.div 
+            className="max-w-4xl mx-auto text-center space-y-8"
+            variants={fadeInUp}
+          >
             <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
               <span className="text-sm text-primary font-medium">Comece Agora</span>
             </div>
@@ -223,23 +294,35 @@ const Index = () => {
               Sem mensalidade. Você só paga uma pequena taxa por transação.
             </p>
 
-            <div className="grid md:grid-cols-3 gap-8 pt-12">
-              <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
-                <div className="text-4xl font-bold text-primary mb-2">0%</div>
-                <div className="text-sm text-muted-foreground">Taxa de adesão</div>
-              </Card>
-              <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
-                <div className="text-4xl font-bold text-primary mb-2">2.5%</div>
-                <div className="text-sm text-muted-foreground">Por transação</div>
-              </Card>
-              <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
-                <div className="text-4xl font-bold text-primary mb-2">24/7</div>
-                <div className="text-sm text-muted-foreground">Suporte disponível</div>
-              </Card>
-            </div>
-          </div>
+            <motion.div 
+              className="grid md:grid-cols-3 gap-8 pt-12"
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+            >
+              <motion.div variants={fadeInUp}>
+                <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
+                  <div className="text-4xl font-bold text-primary mb-2">0%</div>
+                  <div className="text-sm text-muted-foreground">Taxa de adesão</div>
+                </Card>
+              </motion.div>
+              <motion.div variants={fadeInUp}>
+                <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
+                  <div className="text-4xl font-bold text-primary mb-2">2.5%</div>
+                  <div className="text-sm text-muted-foreground">Por transação</div>
+                </Card>
+              </motion.div>
+              <motion.div variants={fadeInUp}>
+                <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
+                  <div className="text-4xl font-bold text-primary mb-2">24/7</div>
+                  <div className="text-sm text-muted-foreground">Suporte disponível</div>
+                </Card>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-12">
