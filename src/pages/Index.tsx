@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import logoViveo from "@/assets/logo-viveo.png";
 import dashboardPreview from "@/assets/dashboard-preview.png";
 import { HeroSection } from "@/components/ui/hero-section-dark";
+import { AnimatedCounter } from "@/components/ui/animated-counter";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -303,19 +304,25 @@ const Index = () => {
             >
               <motion.div variants={fadeInUp}>
                 <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
-                  <div className="text-4xl font-bold text-primary mb-2">0%</div>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    <AnimatedCounter value={0} suffix="%" />
+                  </div>
                   <div className="text-sm text-muted-foreground">Taxa de adesão</div>
                 </Card>
               </motion.div>
               <motion.div variants={fadeInUp}>
                 <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
-                  <div className="text-4xl font-bold text-primary mb-2">2.5%</div>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    <AnimatedCounter value={2.5} suffix="%" />
+                  </div>
                   <div className="text-sm text-muted-foreground">Por transação</div>
                 </Card>
               </motion.div>
               <motion.div variants={fadeInUp}>
                 <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
-                  <div className="text-4xl font-bold text-primary mb-2">24/7</div>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    <AnimatedCounter value={24} suffix="/7" />
+                  </div>
                   <div className="text-sm text-muted-foreground">Suporte disponível</div>
                 </Card>
               </motion.div>
