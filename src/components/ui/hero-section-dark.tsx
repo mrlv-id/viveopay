@@ -1,7 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { ChevronRight } from "lucide-react"
-import { motion, useScroll, useTransform } from "framer-motion"
 
 interface HeroSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
@@ -76,32 +75,18 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
     },
     ref,
   ) => {
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-      target: containerRef,
-      offset: ["start start", "end start"]
-    });
-
-    const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-    const gridY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-    const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-    const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0.3]);
-
     return (
       <div className={cn("relative", className)} ref={ref} {...props}>
-        <div ref={containerRef} className="relative overflow-hidden">
-          <motion.div 
+        <div className="relative overflow-hidden">
+          <div 
             className="absolute top-0 z-[0] h-screen w-screen bg-primary/5 bg-[radial-gradient(ellipse_20%_80%_at_50%_-20%,hsl(var(--primary)/.15),rgba(255,255,255,0))]"
-            style={{ y: backgroundY }}
           />
-          <motion.section 
+          <section 
             className="relative max-w-full mx-auto z-1"
-            style={{ y: gridY }}
           >
             <RetroGrid {...gridOptions} />
-            <motion.div 
+            <div 
               className="max-w-screen-xl z-10 mx-auto px-4 py-28 gap-12 md:px-8"
-              style={{ y: contentY, opacity }}
             >
               <div className="space-y-5 max-w-3xl leading-0 lg:leading-5 mx-auto text-center">
                 <h1 className="text-sm text-muted-foreground group font-sans mx-auto px-5 py-2 bg-gradient-to-tr from-muted/40 via-muted/30 to-transparent border-[2px] border-border/30 rounded-3xl w-fit">
@@ -154,8 +139,8 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
                   />
                 </div>
               )}
-            </motion.div>
-          </motion.section>
+            </div>
+          </section>
         </div>
       </div>
     )
