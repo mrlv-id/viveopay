@@ -19,6 +19,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 
@@ -41,19 +42,18 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarContent>
-        <div className="p-4 flex items-center justify-center gap-2 min-h-[60px]">
+        <div className="p-4 flex items-center justify-between gap-2 min-h-[60px]">
           {open ? (
-            <img 
-              src={logoViveo} 
-              alt="Viveo" 
-              className="h-10 w-auto object-contain"
-            />
+            <>
+              <img 
+                src={logoViveo} 
+                alt="Viveo" 
+                className="h-10 w-auto object-contain"
+              />
+              <SidebarTrigger />
+            </>
           ) : (
-            <img 
-              src={logoViveo} 
-              alt="Viveo" 
-              className="h-8 w-auto object-contain"
-            />
+            <SidebarTrigger className="mx-auto" />
           )}
         </div>
 
