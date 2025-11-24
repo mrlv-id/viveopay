@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import logoViveo from "@/assets/logo-viveo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,9 +85,13 @@ export function Layout({ children }: LayoutProps) {
         <AppSidebar />
         <main className="flex-1 flex flex-col">
           <header className="h-14 border-b border-border flex items-center justify-between px-6">
-            <div className="flex items-center">
-              <SidebarTrigger className="mr-4" />
-              <h1 className="text-lg font-semibold text-foreground">Viveo</h1>
+            <div className="flex items-center gap-4">
+              <SidebarTrigger className="mr-2" />
+              <img 
+                src={logoViveo} 
+                alt="Viveo" 
+                className="h-6 w-auto object-contain hidden sm:block"
+              />
             </div>
             
             <DropdownMenu>
