@@ -1,7 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ReactNode, useEffect, useState } from "react";
-import { User, HelpCircle, Moon, Sun } from "lucide-react";
+import { User, HelpCircle, Moon, Sun, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -94,6 +94,7 @@ export function Layout({
                       <p className="text-xs text-muted-foreground">{getPersonType()}</p>
                     )}
                   </div>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-popover">
