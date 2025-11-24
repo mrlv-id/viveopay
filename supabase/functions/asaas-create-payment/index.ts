@@ -106,6 +106,22 @@ Deno.serve(async (req) => {
       throw new Error('Serviço não encontrado');
     }
 
+    // Validar valor mínimo do Asaas (R$ 5,00)
+    const minimumValueCents = 500; // R$ 5,00
+    if (service.price_cents < minimumValueCents) {
+      console.error('Valor do serviço abaixo do mínimo:', service.price_cents / 100);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Valor inválido',
+          details: 'O valor mínimo para gerar um link de pagamento é R$ 5,00. Por favor, atualize o valor do serviço.'
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
+    }
+
     // Buscar perfil do usuário (vendedor)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')

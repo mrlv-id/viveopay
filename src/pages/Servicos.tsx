@@ -144,6 +144,13 @@ export default function Servicos() {
       return;
     }
 
+    // Validar valor mínimo (R$ 5,00)
+    const minimumValueCents = 500;
+    if (selectedService.price_cents < minimumValueCents) {
+      toast.error("O valor mínimo para gerar um link de pagamento é R$ 5,00. Por favor, atualize o valor do serviço.");
+      return;
+    }
+
     // Validate required fields
     if (!paymentFormData.payerName || paymentFormData.payerName.trim().length < 3) {
       toast.error("Nome deve ter pelo menos 3 caracteres");
