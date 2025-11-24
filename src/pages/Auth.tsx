@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -15,11 +16,10 @@ export default function Auth() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const { signUp, signIn, user } = useAuth();
   const navigate = useNavigate();
 
@@ -48,11 +48,6 @@ export default function Auth() {
       return;
     }
 
-    if (password !== confirmPassword) {
-      toast.error("As senhas não coincidem");
-      return;
-    }
-
     if (!acceptTerms) {
       toast.error("Você deve aceitar os termos e condições");
       return;
@@ -63,7 +58,6 @@ export default function Auth() {
       await signUp(email, password, fullName);
       setEmail("");
       setPassword("");
-      setConfirmPassword("");
       setFullName("");
       setAcceptTerms(false);
     } catch (error) {
@@ -205,31 +199,6 @@ export default function Auth() {
               )}
             </div>
 
-            {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                  Confirmar Senha
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="h-12 bg-background border-input pr-10"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-            )}
 
             {isSignUp && (
               <div className="flex items-start space-x-2">
@@ -244,9 +213,16 @@ export default function Auth() {
                   className="text-sm text-muted-foreground leading-tight cursor-pointer"
                 >
                   Eu aceito os{" "}
-                  <a href="#" className="text-primary hover:underline">
+                  <button 
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowTermsModal(true);
+                    }}
+                    className="text-primary hover:underline"
+                  >
                     Termos e Condições
-                  </a>
+                  </button>
                 </label>
               </div>
             )}
@@ -271,7 +247,6 @@ export default function Auth() {
                   setIsSignUp(!isSignUp);
                   setEmail("");
                   setPassword("");
-                  setConfirmPassword("");
                   setFullName("");
                   setAcceptTerms(false);
                 }}
@@ -283,6 +258,111 @@ export default function Auth() {
           </div>
         </Card>
       </div>
+
+      {/* Modal de Termos e Condições */}
+      <Dialog open={showTermsModal} onOpenChange={setShowTermsModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Termos e Condições de Uso</DialogTitle>
+            <DialogDescription>
+              Última atualização: {new Date().toLocaleDateString('pt-BR')}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 text-sm text-foreground">
+            <section>
+              <h3 className="font-semibold text-base mb-2">1. Aceitação dos Termos</h3>
+              <p>
+                Ao acessar e usar a plataforma Viveo, você concorda em cumprir e estar vinculado aos 
+                seguintes termos e condições de uso. Se você não concordar com qualquer parte destes 
+                termos, não deverá usar nossos serviços.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-base mb-2">2. Descrição do Serviço</h3>
+              <p>
+                A Viveo é uma plataforma completa para gestão financeira de profissionais de saúde mental, 
+                oferecendo ferramentas para gerenciar atendimentos, pagamentos e finanças em um só lugar.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-base mb-2">3. Cadastro e Conta</h3>
+              <p>
+                Para utilizar nossos serviços, você deve criar uma conta fornecendo informações precisas 
+                e completas. Você é responsável por manter a confidencialidade de sua senha e por todas 
+                as atividades que ocorram em sua conta.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-base mb-2">4. Privacidade e Proteção de Dados</h3>
+              <p>
+                Respeitamos sua privacidade e estamos comprometidos em proteger seus dados pessoais. 
+                Coletamos, usamos e armazenamos suas informações de acordo com a Lei Geral de Proteção 
+                de Dados (LGPD) e nossa Política de Privacidade.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-base mb-2">5. Uso Aceitável</h3>
+              <p>
+                Você concorda em usar a plataforma apenas para fins legais e de acordo com estes termos. 
+                É proibido usar nossos serviços para qualquer atividade ilegal, fraudulenta ou que viole 
+                os direitos de terceiros.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-base mb-2">6. Transações Financeiras</h3>
+              <p>
+                Todas as transações financeiras realizadas através da plataforma estão sujeitas a taxas 
+                e condições específicas. Você é responsável por garantir a precisão das informações 
+                fornecidas para processamento de pagamentos.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-base mb-2">7. Propriedade Intelectual</h3>
+              <p>
+                Todo o conteúdo, marcas registradas, logotipos e propriedade intelectual presentes na 
+                plataforma são de propriedade exclusiva da Viveo ou de seus licenciadores.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-base mb-2">8. Limitação de Responsabilidade</h3>
+              <p>
+                A Viveo não se responsabiliza por quaisquer danos diretos, indiretos, incidentais ou 
+                consequenciais decorrentes do uso ou incapacidade de usar nossos serviços.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-base mb-2">9. Modificações dos Termos</h3>
+              <p>
+                Reservamo-nos o direito de modificar estes termos a qualquer momento. As alterações 
+                entrarão em vigor imediatamente após sua publicação na plataforma.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-base mb-2">10. Contato</h3>
+              <p>
+                Para dúvidas ou questões sobre estes termos, entre em contato através dos canais de 
+                suporte disponíveis na plataforma.
+              </p>
+            </section>
+          </div>
+
+          <div className="flex justify-end pt-4 border-t">
+            <Button onClick={() => setShowTermsModal(false)}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
