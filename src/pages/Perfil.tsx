@@ -2,10 +2,81 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export default function Perfil() {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    full_name: "",
+    email: "",
+    phone: "",
+    cpf_cnpj: "",
+    pix_key: "",
+    avatar_url: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      loadProfile();
+    }
+  }, [user]);
+
+  const loadProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setFormData({
+          full_name: data.full_name || "",
+          email: user?.email || "",
+          phone: data.phone || "",
+          cpf_cnpj: data.cpf_cnpj || "",
+          pix_key: data.pix_key || "",
+          avatar_url: data.avatar_url || "",
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao carregar perfil:", error);
+      toast.error("Erro ao carregar perfil");
+    }
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: formData.full_name,
+          phone: formData.phone,
+          cpf_cnpj: formData.cpf_cnpj,
+          pix_key: formData.pix_key,
+        })
+        .eq("id", user?.id);
+
+      if (error) throw error;
+
+      toast.success("Perfil atualizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar perfil:", error);
+      toast.error("Erro ao atualizar perfil");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
@@ -17,8 +88,9 @@ export default function Perfil() {
         <div className="flex items-center gap-6 mb-6">
           <div className="relative">
             <Avatar className="h-24 w-24">
+              <AvatarImage src={formData.avatar_url} />
               <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-                U
+                {formData.full_name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
             <Button
@@ -39,33 +111,74 @@ export default function Perfil() {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="nome">Nome Completo</Label>
-            <Input id="nome" placeholder="Seu nome completo" />
+            <Input
+              id="nome"
+              value={formData.full_name}
+              onChange={(e) =>
+                setFormData({ ...formData, full_name: e.target.value })
+              }
+              placeholder="Seu nome completo"
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="seu@email.com" disabled />
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              disabled
+              className="bg-muted"
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="telefone">Telefone</Label>
-            <Input id="telefone" placeholder="(00) 00000-0000" />
+            <Input
+              id="telefone"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              placeholder="(00) 00000-0000"
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="cpf">CPF/CNPJ</Label>
-            <Input id="cpf" placeholder="000.000.000-00" />
+            <Input
+              id="cpf"
+              value={formData.cpf_cnpj}
+              onChange={(e) =>
+                setFormData({ ...formData, cpf_cnpj: e.target.value })
+              }
+              placeholder="000.000.000-00"
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="pix">Chave PIX</Label>
-            <Input id="pix" placeholder="Sua chave PIX" />
+            <Input
+              id="pix"
+              value={formData.pix_key}
+              onChange={(e) =>
+                setFormData({ ...formData, pix_key: e.target.value })
+              }
+              placeholder="Sua chave PIX para receber saques"
+            />
+            <p className="text-xs text-muted-foreground">
+              Necessária para solicitar saques. Pode ser email, telefone, CPF/CNPJ ou chave aleatória.
+            </p>
           </div>
         </div>
 
         <div className="flex justify-end mt-6">
-          <Button className="bg-primary hover:bg-primary/90">
-            Salvar Alterações
+          <Button
+            className="bg-primary hover:bg-primary/90"
+            onClick={handleSave}
+            disabled={loading}
+          >
+            {loading ? "Salvando..." : "Salvar Alterações"}
           </Button>
         </div>
       </Card>

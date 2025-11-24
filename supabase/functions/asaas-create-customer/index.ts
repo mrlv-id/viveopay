@@ -1,0 +1,125 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+const ASAAS_API_URL = 'https://api.asaas.com/v3';
+
+interface CreateCustomerRequest {
+  name: string;
+  email: string;
+  cpfCnpj?: string;
+  phone?: string;
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const asaasApiKey = Deno.env.get('ASAAS_API_KEY')!;
+  
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  try {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Authorization header is required');
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      throw new Error('Unauthorized');
+    }
+
+    const { name, email, cpfCnpj, phone }: CreateCustomerRequest = await req.json();
+
+    console.log('Criando cliente no Asaas:', { name, email });
+
+    // Verificar se já existe customer_id no perfil
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('asaas_customer_id')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.asaas_customer_id) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          customerId: profile.asaas_customer_id,
+          message: 'Cliente já existe',
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
+    }
+
+    // Criar cliente no Asaas
+    const customerResponse = await fetch(`${ASAAS_API_URL}/customers`, {
+      method: 'POST',
+      headers: {
+        'access_token': asaasApiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        cpfCnpj,
+        phone,
+        externalReference: user.id,
+      }),
+    });
+
+    if (!customerResponse.ok) {
+      const errorText = await customerResponse.text();
+      console.error('Erro ao criar cliente no Asaas:', errorText);
+      throw new Error('Erro ao criar cliente no Asaas');
+    }
+
+    const customer = await customerResponse.json();
+    console.log('Cliente criado no Asaas:', customer.id);
+
+    // Atualizar perfil com customer_id
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ asaas_customer_id: customer.id })
+      .eq('id', user.id);
+
+    if (updateError) {
+      console.error('Erro ao atualizar perfil:', updateError);
+      throw updateError;
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        customerId: customer.id,
+        message: 'Cliente criado com sucesso',
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      }
+    );
+
+  } catch (error) {
+    console.error('Erro ao criar cliente:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    return new Response(
+      JSON.stringify({ error: errorMessage }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      }
+    );
+  }
+});
