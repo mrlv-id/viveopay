@@ -1,12 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, BarChart3, Wallet, Zap, Shield, TrendingUp, DollarSign, Star, Quote } from "lucide-react";
+import { ArrowRight, BarChart3, Wallet, Zap, Shield, TrendingUp, DollarSign, Star, Quote, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import logoViveo from "@/assets/logo-viveo.png";
 import dashboardPreview from "@/assets/dashboard-preview.png";
 import { HeroSection } from "@/components/ui/hero-section-dark";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -324,6 +330,112 @@ const Index = () => {
                 </Card>
               </motion.div>
             ))}
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* FAQ - Perguntas Frequentes */}
+      <motion.section 
+        className="py-20 md:py-32 relative overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={fadeInUp}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,hsl(var(--primary)/.1),transparent)]" />
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div 
+            className="text-center mb-16 space-y-4"
+            variants={fadeInUp}
+          >
+            <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
+              <span className="text-sm text-primary font-medium">FAQ</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60">
+              Perguntas Frequentes
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Tire suas dúvidas sobre a plataforma Viveo.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            className="max-w-3xl mx-auto"
+            variants={fadeInUp}
+          >
+            <Accordion type="single" collapsible className="space-y-4">
+              <AccordionItem value="item-1" className="bg-card/30 backdrop-blur-sm border-border/30 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:text-primary transition-colors">
+                  <div className="flex items-center gap-3">
+                    <HelpCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span className="font-semibold">Como funciona a cobrança de taxas?</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pl-8">
+                  A Viveo cobra apenas 2,5% por transação confirmada. Não há mensalidade, taxa de adesão ou custos ocultos. Você só paga quando recebe.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2" className="bg-card/30 backdrop-blur-sm border-border/30 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:text-primary transition-colors">
+                  <div className="flex items-center gap-3">
+                    <HelpCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span className="font-semibold">Quanto tempo leva para receber meu dinheiro?</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pl-8">
+                  Os pagamentos confirmados ficam disponíveis para saque imediato via PIX. Você tem total controle sobre quando quer transferir seu saldo para sua conta bancária.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3" className="bg-card/30 backdrop-blur-sm border-border/30 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:text-primary transition-colors">
+                  <div className="flex items-center gap-3">
+                    <HelpCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span className="font-semibold">Preciso ter CNPJ para usar a Viveo?</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pl-8">
+                  Não necessariamente. Você pode criar sua conta usando CPF ou CNPJ. Ambos os formatos são aceitos pela plataforma.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4" className="bg-card/30 backdrop-blur-sm border-border/30 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:text-primary transition-colors">
+                  <div className="flex items-center gap-3">
+                    <HelpCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span className="font-semibold">Como meus pacientes fazem o pagamento?</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pl-8">
+                  Você cria um link de pagamento personalizado e envia para seu paciente por WhatsApp, email ou qualquer canal. Eles clicam no link e pagam via PIX, cartão de crédito ou boleto de forma segura.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-5" className="bg-card/30 backdrop-blur-sm border-border/30 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:text-primary transition-colors">
+                  <div className="flex items-center gap-3">
+                    <HelpCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span className="font-semibold">A plataforma é segura?</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pl-8">
+                  Sim! A Viveo utiliza criptografia de ponta a ponta e está em conformidade com as normas de segurança bancária. Todos os dados financeiros são protegidos e os pagamentos processados por gateways certificados.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-6" className="bg-card/30 backdrop-blur-sm border-border/30 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:text-primary transition-colors">
+                  <div className="flex items-center gap-3">
+                    <HelpCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span className="font-semibold">Posso cancelar minha conta a qualquer momento?</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pl-8">
+                  Sim, não há período de fidelidade. Você pode cancelar sua conta quando quiser, sem custos adicionais. Basta solicitar o saque do seu saldo disponível antes do cancelamento.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </motion.div>
         </div>
       </motion.section>
