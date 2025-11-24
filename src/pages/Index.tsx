@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, BarChart3, Wallet, Zap, Shield, TrendingUp, DollarSign } from "lucide-react";
 import logoViveo from "@/assets/logo-viveo.png";
+import { HeroSection } from "@/components/ui/hero-section-dark";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -30,119 +31,38 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Hero Section - ATENÇÃO */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
-        <div className="container mx-auto px-6 py-20 md:py-32 relative">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 animate-fade-in">
-              <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                <span className="text-sm text-primary font-medium">🚀 Plataforma completa para psicólogos</span>
-              </div>
-              
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                A plataforma de pagamentos para psicólogos do futuro
-              </h1>
-              
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                Automatize seus recebimentos, organize sua rotina e tenha controle financeiro total — tudo em um único painel.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-primary hover:bg-primary/90 text-lg h-14 px-8"
-                  onClick={() => navigate("/auth")}
-                >
-                  Criar conta gratuita
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="text-lg h-14 px-8 border-border/50 hover:bg-accent/50"
-                >
-                  Falar com um gerente
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-8 pt-4">
-                <div>
-                  <div className="text-3xl font-bold text-primary">+500</div>
-                  <div className="text-sm text-muted-foreground">Profissionais</div>
-                </div>
-                <div className="h-12 w-px bg-border" />
-                <div>
-                  <div className="text-3xl font-bold text-primary">R$ 2M+</div>
-                  <div className="text-sm text-muted-foreground">Processado</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Dashboard Mockup */}
-            <div className="relative animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-              <Card className="relative bg-card/50 backdrop-blur-sm border-border/50 p-6 overflow-hidden">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between pb-4 border-b border-border/50">
-                    <h3 className="font-semibold">Dashboard</h3>
-                    <div className="text-sm text-muted-foreground">Hoje</div>
-                  </div>
-                  
-                  <div>
-                    <div className="text-sm text-muted-foreground mb-2">Saldo Total</div>
-                    <div className="text-4xl font-bold mb-6">R$ 38.534,76</div>
-                    
-                    <div className="h-48 bg-gradient-to-br from-primary/10 to-transparent rounded-lg p-4 border border-border/30">
-                      <svg className="w-full h-full" viewBox="0 0 300 150" preserveAspectRatio="none">
-                        <path
-                          d="M 0 120 Q 50 100, 100 80 T 200 40 T 300 20"
-                          fill="none"
-                          stroke="hsl(var(--primary))"
-                          strokeWidth="2"
-                          opacity="0.8"
-                        />
-                        <path
-                          d="M 0 120 Q 50 100, 100 80 T 200 40 T 300 20 L 300 150 L 0 150 Z"
-                          fill="url(#gradient)"
-                          opacity="0.2"
-                        />
-                        <defs>
-                          <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.4" />
-                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4 pt-4">
-                    <div className="space-y-1">
-                      <div className="text-xs text-muted-foreground">Recebido</div>
-                      <div className="text-lg font-semibold text-green-500">R$ 15.2K</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-muted-foreground">Transações</div>
-                      <div className="text-lg font-semibold">345</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-muted-foreground">Taxa Média</div>
-                      <div className="text-lg font-semibold text-primary">2.5%</div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section */}
+      <HeroSection
+        title="🚀 Plataforma completa para psicólogos"
+        subtitle={{
+          regular: "A plataforma de pagamentos para psicólogos ",
+          gradient: "do futuro",
+        }}
+        description="Automatize seus recebimentos, organize sua rotina e tenha controle financeiro total — tudo em um único painel."
+        ctaText="Criar conta gratuita"
+        onCtaClick={() => navigate("/auth")}
+        bottomImage={{
+          light: logoViveo,
+          dark: logoViveo,
+        }}
+        gridOptions={{
+          angle: 65,
+          opacity: 0.3,
+          cellSize: 50,
+          lightLineColor: "hsl(var(--border))",
+          darkLineColor: "hsl(var(--border))",
+        }}
+      />
 
       {/* Interesse - Problemas */}
-      <section id="features" className="py-20 md:py-32 bg-accent/20">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+      <section id="features" className="py-20 md:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-16 space-y-4">
+            <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
+              <span className="text-sm text-primary font-medium">Problemas Comuns</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60">
               Desafios que todo psicólogo enfrenta
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -175,9 +95,11 @@ const Index = () => {
             ].map((problem, index) => (
               <Card 
                 key={index} 
-                className="p-6 bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all hover:scale-105"
+                className="group p-6 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/10"
               >
-                <problem.icon className="h-10 w-10 text-primary mb-4" />
+                <div className="p-3 rounded-lg bg-primary/10 w-fit mb-4 group-hover:bg-primary/20 transition-colors">
+                  <problem.icon className="h-6 w-6 text-primary" />
+                </div>
                 <h3 className="text-lg font-semibold mb-2">{problem.title}</h3>
                 <p className="text-sm text-muted-foreground">{problem.description}</p>
               </Card>
@@ -187,10 +109,14 @@ const Index = () => {
       </section>
 
       {/* Desejo - Soluções */}
-      <section id="benefits" className="py-20 md:py-32">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+      <section id="benefits" className="py-20 md:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,hsl(var(--primary)/.1),transparent)]" />
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-16 space-y-4">
+            <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
+              <span className="text-sm text-primary font-medium">Soluções Completas</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60">
               A solução completa para sua prática
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -198,10 +124,10 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
-            <Card className="p-8 bg-gradient-to-br from-primary/5 to-transparent border-border/50">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg bg-primary/10">
+          <div className="grid lg:grid-cols-2 gap-6">
+            <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   <Zap className="h-6 w-6 text-primary" />
                 </div>
                 <div>
@@ -213,9 +139,9 @@ const Index = () => {
               </div>
             </Card>
 
-            <Card className="p-8 bg-gradient-to-br from-primary/5 to-transparent border-border/50">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg bg-primary/10">
+            <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
                 <div>
@@ -227,9 +153,9 @@ const Index = () => {
               </div>
             </Card>
 
-            <Card className="p-8 bg-gradient-to-br from-primary/5 to-transparent border-border/50">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg bg-primary/10">
+            <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   <DollarSign className="h-6 w-6 text-primary" />
                 </div>
                 <div>
@@ -241,9 +167,9 @@ const Index = () => {
               </div>
             </Card>
 
-            <Card className="p-8 bg-gradient-to-br from-primary/5 to-transparent border-border/50">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg bg-primary/10">
+            <Card className="group p-8 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:shadow-lg hover:shadow-primary/10">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   <TrendingUp className="h-6 w-6 text-primary" />
                 </div>
                 <div>
@@ -259,12 +185,16 @@ const Index = () => {
       </section>
 
       {/* Ação - CTA Final */}
-      <section id="pricing" className="py-20 md:py-32 bg-gradient-to-br from-primary/10 via-background to-background relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iaHNsKHZhcigtLXByaW1hcnkpKSIgc3Ryb2tlLXdpZHRoPSIuNSIgb3BhY2l0eT0iLjEiLz48L2c+PC9zdmc+')] opacity-20" />
+      <section id="pricing" className="py-20 md:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,hsl(var(--primary)/.15),transparent)]" />
         
-        <div className="container mx-auto px-6 relative">
+        <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h2 className="text-4xl md:text-6xl font-bold">
+            <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
+              <span className="text-sm text-primary font-medium">Comece Agora</span>
+            </div>
+            
+            <h2 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60">
               Comece a receber pagamentos hoje mesmo
             </h2>
             
@@ -273,14 +203,19 @@ const Index = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
-              <Button 
-                size="lg" 
-                className="bg-primary hover:bg-primary/90 text-lg h-16 px-12 shadow-lg shadow-primary/25"
-                onClick={() => navigate("/auth")}
-              >
-                Criar minha conta gratuita
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <span className="relative inline-block overflow-hidden rounded-full p-[1.5px]">
+                <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,hsl(var(--primary)/.3)_0%,hsl(var(--primary))_50%,hsl(var(--primary)/.3)_100%)]" />
+                <div className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-background backdrop-blur-3xl">
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-tr from-muted/40 via-primary/30 to-transparent hover:from-muted/50 hover:via-primary/40 border-border text-lg h-16 px-12 rounded-full"
+                    onClick={() => navigate("/auth")}
+                  >
+                    Criar minha conta gratuita
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </div>
+              </span>
             </div>
 
             <p className="text-sm text-muted-foreground pt-4">
@@ -288,18 +223,18 @@ const Index = () => {
             </p>
 
             <div className="grid md:grid-cols-3 gap-8 pt-12">
-              <div className="text-center">
+              <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
                 <div className="text-4xl font-bold text-primary mb-2">0%</div>
                 <div className="text-sm text-muted-foreground">Taxa de adesão</div>
-              </div>
-              <div className="text-center">
+              </Card>
+              <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
                 <div className="text-4xl font-bold text-primary mb-2">2.5%</div>
                 <div className="text-sm text-muted-foreground">Por transação</div>
-              </div>
-              <div className="text-center">
+              </Card>
+              <Card className="p-6 bg-card/30 backdrop-blur-sm border-border/30">
                 <div className="text-4xl font-bold text-primary mb-2">24/7</div>
                 <div className="text-sm text-muted-foreground">Suporte disponível</div>
-              </div>
+              </Card>
             </div>
           </div>
         </div>
