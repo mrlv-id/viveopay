@@ -68,8 +68,11 @@ export function Layout({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                  <Avatar className="h-9 w-9 cursor-pointer">
-                    <AvatarImage src={profile?.avatar_url || undefined} />
+                  <Avatar className="h-9 w-9 cursor-pointer aspect-square">
+                    <AvatarImage 
+                      src={profile?.avatar_url || undefined}
+                      className="object-cover aspect-square"
+                    />
                     <AvatarFallback className="bg-primary text-primary-foreground">
                       {profile ? getInitials(profile.full_name) : 'PF'}
                     </AvatarFallback>

@@ -62,6 +62,55 @@ export default function Perfil() {
     }
   };
 
+  const resizeImage = (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // Definir tamanho quadrado de alta qualidade
+          const size = 500;
+          canvas.width = size;
+          canvas.height = size;
+          
+          // Calcular dimensões para manter aspect ratio
+          let sourceX = 0;
+          let sourceY = 0;
+          let sourceSize = Math.min(img.width, img.height);
+          
+          if (img.width > img.height) {
+            sourceX = (img.width - img.height) / 2;
+          } else {
+            sourceY = (img.height - img.width) / 2;
+          }
+          
+          // Desenhar imagem centralizada e quadrada
+          ctx?.drawImage(
+            img,
+            sourceX, sourceY, sourceSize, sourceSize,
+            0, 0, size, size
+          );
+          
+          canvas.toBlob(
+            (blob) => {
+              if (blob) resolve(blob);
+              else reject(new Error('Erro ao processar imagem'));
+            },
+            'image/jpeg',
+            0.95
+          );
+        };
+        img.onerror = reject;
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (!event.target.files || event.target.files.length === 0) {
@@ -84,6 +133,9 @@ export default function Perfil() {
 
       setUploading(true);
 
+      // Redimensionar e otimizar imagem
+      const processedBlob = await resizeImage(file);
+
       // Deletar avatar antigo se existir
       if (formData.avatar_url) {
         const oldPath = formData.avatar_url.split('/').pop();
@@ -94,14 +146,17 @@ export default function Perfil() {
         }
       }
 
-      // Upload nova imagem
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
+      // Upload nova imagem processada
+      const fileName = `${Date.now()}.jpg`;
       const filePath = `${user?.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, processedBlob, {
+          contentType: 'image/jpeg',
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
@@ -205,8 +260,11 @@ export default function Perfil() {
       <Card className="p-6 bg-card border-border">
         <div className="flex items-center gap-6 mb-6">
           <div className="relative">
-            <Avatar className="h-24 w-24">
-              <AvatarImage src={formData.avatar_url} />
+            <Avatar className="h-24 w-24 aspect-square">
+              <AvatarImage 
+                src={formData.avatar_url} 
+                className="object-cover aspect-square"
+              />
               <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
                 {formData.full_name?.charAt(0) || "U"}
               </AvatarFallback>
