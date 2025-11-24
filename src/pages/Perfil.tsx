@@ -3,16 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { formatCpfCnpj, validateCpfCnpj } from "@/lib/cpfCnpjUtils";
 
 export default function Perfil() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [cpfCnpjValidation, setCpfCnpjValidation] = useState<{ valid: boolean; message?: string }>({ valid: true });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     full_name: "",
@@ -121,7 +123,29 @@ export default function Perfil() {
     }
   };
 
+  const handleCpfCnpjChange = (value: string) => {
+    const formatted = formatCpfCnpj(value);
+    setFormData({ ...formData, cpf_cnpj: formatted });
+    
+    // Validar apenas se tiver conteúdo
+    if (formatted.replace(/\D/g, '').length > 0) {
+      const validation = validateCpfCnpj(formatted);
+      setCpfCnpjValidation(validation);
+    } else {
+      setCpfCnpjValidation({ valid: true });
+    }
+  };
+
   const handleSave = async () => {
+    // Validar CPF/CNPJ antes de salvar
+    if (formData.cpf_cnpj) {
+      const validation = validateCpfCnpj(formData.cpf_cnpj);
+      if (!validation.valid) {
+        toast.error(validation.message || "CPF/CNPJ inválido");
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       const { error } = await supabase
@@ -228,14 +252,34 @@ export default function Perfil() {
 
           <div className="space-y-2">
             <Label htmlFor="cpf">CPF/CNPJ</Label>
-            <Input
-              id="cpf"
-              value={formData.cpf_cnpj}
-              onChange={(e) =>
-                setFormData({ ...formData, cpf_cnpj: e.target.value })
-              }
-              placeholder="000.000.000-00"
-            />
+            <div className="relative">
+              <Input
+                id="cpf"
+                value={formData.cpf_cnpj}
+                onChange={(e) => handleCpfCnpjChange(e.target.value)}
+                placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                maxLength={18}
+                className={
+                  formData.cpf_cnpj && !cpfCnpjValidation.valid
+                    ? "border-destructive focus-visible:ring-destructive pr-10"
+                    : formData.cpf_cnpj && cpfCnpjValidation.valid
+                    ? "border-green-500 focus-visible:ring-green-500 pr-10"
+                    : ""
+                }
+              />
+              {formData.cpf_cnpj && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {cpfCnpjValidation.valid ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-destructive" />
+                  )}
+                </div>
+              )}
+            </div>
+            {formData.cpf_cnpj && !cpfCnpjValidation.valid && cpfCnpjValidation.message && (
+              <p className="text-xs text-destructive">{cpfCnpjValidation.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
