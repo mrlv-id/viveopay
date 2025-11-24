@@ -139,8 +139,26 @@ export default function Servicos() {
   };
 
   const handleGeneratePayment = async () => {
-    if (!selectedService || !paymentFormData.payerName || !paymentFormData.payerEmail) {
-      toast.error("Preencha os campos obrigatórios");
+    if (!selectedService) {
+      toast.error("Serviço não selecionado");
+      return;
+    }
+
+    // Validate required fields
+    if (!paymentFormData.payerName || paymentFormData.payerName.trim().length < 3) {
+      toast.error("Nome deve ter pelo menos 3 caracteres");
+      return;
+    }
+
+    if (!paymentFormData.payerEmail) {
+      toast.error("Email é obrigatório");
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(paymentFormData.payerEmail)) {
+      toast.error("Email inválido");
       return;
     }
 

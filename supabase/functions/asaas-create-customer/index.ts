@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,12 +8,14 @@ const corsHeaders = {
 
 const ASAAS_API_URL = 'https://api.asaas.com/v3';
 
-interface CreateCustomerRequest {
-  name: string;
-  email: string;
-  cpfCnpj?: string;
-  phone?: string;
-}
+const CreateCustomerSchema = z.object({
+  name: z.string().min(3, { message: 'Name must be at least 3 characters' }).max(100, { message: 'Name must be less than 100 characters' }),
+  email: z.string().email({ message: 'Invalid email address' }).max(255, { message: 'Email must be less than 255 characters' }),
+  cpfCnpj: z.string().optional(),
+  phone: z.string().optional(),
+});
+
+type CreateCustomerRequest = z.infer<typeof CreateCustomerSchema>;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -38,7 +41,24 @@ Deno.serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { name, email, cpfCnpj, phone }: CreateCustomerRequest = await req.json();
+    const rawBody = await req.json();
+    
+    // Validate input using Zod schema
+    const validationResult = CreateCustomerSchema.safeParse(rawBody);
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Validation error',
+          details: validationResult.error.errors 
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
+    }
+
+    const { name, email, cpfCnpj, phone }: CreateCustomerRequest = validationResult.data;
 
     console.log('Criando cliente no Asaas:', { name, email });
 
