@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import logoViveo from "@/assets/logo-viveo.png";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AtSign, ChevronLeft, Grid2x2Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -94,111 +94,121 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-primary/20 via-background to-accent/20">
-      {/* Left Side - Info Section */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent opacity-90" />
-        <div className="relative z-10 flex flex-col justify-center p-12 text-white">
+    <main className="relative md:h-screen md:overflow-hidden lg:grid lg:grid-cols-2">
+      {/* Left Side - Animated Background */}
+      <div className="bg-muted/60 relative hidden h-full flex-col border-r p-10 lg:flex">
+        <div className="from-background absolute inset-0 z-10 bg-gradient-to-t to-transparent" />
+        <div className="z-10 flex items-center gap-2">
           <img 
             src={logoViveo} 
             alt="Viveo" 
-            className="h-12 w-auto object-contain mb-16"
+            className="h-8 w-auto object-contain"
           />
-          <h1 className="text-5xl font-bold mb-6">
-            Rápido, Eficiente e Produtivo
-          </h1>
-          <p className="text-xl text-white/90 leading-relaxed">
-            A plataforma completa para gestão financeira de profissionais de saúde mental.
-            Gerencie seus atendimentos, pagamentos e finanças em um só lugar.
-          </p>
         </div>
-        {/* Decorative circles */}
-        <div className="absolute -top-20 -left-20 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+        <div className="z-10 mt-auto">
+          <blockquote className="space-y-2">
+            <p className="text-xl">
+              &ldquo;A plataforma completa para gestão financeira de profissionais de saúde mental.
+              Gerencie seus atendimentos, pagamentos e finanças em um só lugar.&rdquo;
+            </p>
+            <footer className="font-mono text-sm font-semibold">
+              ~ Viveo Team
+            </footer>
+          </blockquote>
+        </div>
+        <div className="absolute inset-0">
+          <FloatingPaths position={1} />
+          <FloatingPaths position={-1} />
+        </div>
       </div>
 
       {/* Right Side - Auth Form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
-        <Card className="w-full max-w-md bg-card/95 backdrop-blur-sm border-border shadow-2xl p-8">
-          <div className="text-center mb-8 lg:hidden">
+      <div className="relative flex min-h-screen flex-col justify-center p-4">
+        <div
+          aria-hidden
+          className="absolute inset-0 isolate contain-strict -z-10 opacity-60"
+        >
+          <div className="bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsl(var(--foreground)/.06)_0,hsla(0,0%,55%,.02)_50%,hsl(var(--foreground)/.01)_80%)] absolute top-0 right-0 h-[80rem] w-[35rem] -translate-y-[21.875rem] rounded-full" />
+          <div className="bg-[radial-gradient(50%_50%_at_50%_50%,hsl(var(--foreground)/.04)_0,hsl(var(--foreground)/.01)_80%,transparent_100%)] absolute top-0 right-0 h-[80rem] w-[15rem] [translate:5%_-50%] rounded-full" />
+          <div className="bg-[radial-gradient(50%_50%_at_50%_50%,hsl(var(--foreground)/.04)_0,hsl(var(--foreground)/.01)_80%,transparent_100%)] absolute top-0 right-0 h-[80rem] w-[15rem] -translate-y-[21.875rem] rounded-full" />
+        </div>
+
+        <Button variant="ghost" className="absolute top-7 left-5" asChild>
+          <a href="/">
+            <ChevronLeft className='size-4 me-2' />
+            Início
+          </a>
+        </Button>
+
+        <div className="mx-auto space-y-6 sm:w-[28rem]">
+          <div className="flex items-center gap-2 lg:hidden">
             <img 
               src={logoViveo} 
               alt="Viveo" 
-              className="h-10 w-auto object-contain mx-auto mb-4"
+              className="h-8 w-auto object-contain"
             />
           </div>
 
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-foreground mb-2">
-              {isSignUp ? "Criar Conta" : "Entrar"}
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              {isSignUp ? "Comece sua jornada com a Viveo" : "Acesse sua conta"}
+          <div className="flex flex-col space-y-2">
+            <h1 className="font-heading text-3xl font-bold tracking-wide">
+              {isSignUp ? "Criar Conta" : "Entrar na Viveo"}
+            </h1>
+            <p className="text-muted-foreground text-base">
+              {isSignUp ? "Comece sua jornada com a Viveo" : "Acesse sua conta e gerencie suas finanças"}
             </p>
           </div>
 
-          <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-5">
+          <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
             {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm font-medium">
-                  Nome Completo
-                </Label>
+              <div className="relative h-max">
                 <Input
-                  id="fullName"
+                  placeholder="Nome completo"
+                  className="h-11"
                   type="text"
-                  placeholder="Digite seu nome completo"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="h-12 bg-background border-input"
                   required
                 />
               </div>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
-                Email
-              </Label>
+            <div className="relative h-max">
               <Input
-                id="email"
-                type="email"
                 placeholder="seu@email.com"
+                className="peer ps-9 h-11"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-12 bg-background border-input"
                 required
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
-                Senha
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 bg-background border-input pr-10"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+              <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
+                <AtSign className="size-4" aria-hidden="true" />
               </div>
-              {isSignUp && (
-                <p className="text-xs text-muted-foreground">
-                  Use 8 ou mais caracteres com letras, números e símbolos.
-                </p>
-              )}
             </div>
 
+            <div className="relative h-max">
+              <Input
+                placeholder="••••••••"
+                className="h-11 pr-10"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+
+            {isSignUp && (
+              <p className="text-xs text-muted-foreground">
+                Use 8 ou mais caracteres com letras, números e símbolos.
+              </p>
+            )}
 
             {isSignUp && (
               <div className="flex items-start space-x-2">
@@ -227,19 +237,12 @@ export default function Auth() {
               </div>
             )}
 
-            <Button
-              type="submit"
-              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
-              disabled={isLoading}
-            >
-              {isLoading 
-                ? (isSignUp ? "Criando conta..." : "Entrando...") 
-                : (isSignUp ? "Criar Conta" : "Entrar")
-              }
+            <Button type="submit" className="w-full h-11" disabled={isLoading}>
+              <span>{isLoading ? (isSignUp ? "Criando conta..." : "Entrando...") : (isSignUp ? "Criar Conta" : "Entrar")}</span>
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="text-center">
             <p className="text-sm text-muted-foreground">
               {isSignUp ? "Já tem uma conta? " : "Não tem uma conta? "}
               <button
@@ -256,7 +259,29 @@ export default function Auth() {
               </button>
             </p>
           </div>
-        </Card>
+
+          {isSignUp && (
+            <p className="text-muted-foreground mt-8 text-sm text-center">
+              Ao criar uma conta, você concorda com nossos{' '}
+              <button
+                type="button"
+                onClick={() => setShowTermsModal(true)}
+                className="hover:text-primary underline underline-offset-4"
+              >
+                Termos de Serviço
+              </button>
+              {' '}e{' '}
+              <button
+                type="button"
+                onClick={() => setShowTermsModal(true)}
+                className="hover:text-primary underline underline-offset-4"
+              >
+                Política de Privacidade
+              </button>
+              .
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Modal de Termos e Condições */}
@@ -363,6 +388,53 @@ export default function Auth() {
           </div>
         </DialogContent>
       </Dialog>
+    </main>
+  );
+}
+
+// Floating Paths Animation Component
+function FloatingPaths({ position }: { position: number }) {
+  const paths = Array.from({ length: 36 }, (_, i) => ({
+    id: i,
+    d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
+      380 - i * 5 * position
+    } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
+      152 - i * 5 * position
+    } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
+      684 - i * 5 * position
+    } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
+    width: 0.5 + i * 0.03,
+  }));
+
+  return (
+    <div className="pointer-events-none absolute inset-0">
+      <svg
+        className="h-full w-full text-foreground"
+        viewBox="0 0 696 316"
+        fill="none"
+      >
+        <title>Background Paths</title>
+        {paths.map((path) => (
+          <motion.path
+            key={path.id}
+            d={path.d}
+            stroke="currentColor"
+            strokeWidth={path.width}
+            strokeOpacity={0.1 + path.id * 0.03}
+            initial={{ pathLength: 0.3, opacity: 0.6 }}
+            animate={{
+              pathLength: 1,
+              opacity: [0.3, 0.6, 0.3],
+              pathOffset: [0, 1, 0],
+            }}
+            transition={{
+              duration: 20 + Math.random() * 10,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+        ))}
+      </svg>
     </div>
   );
 }
