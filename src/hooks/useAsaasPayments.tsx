@@ -31,9 +31,6 @@ export const useAsaasPayments = () => {
 
       const response = await supabase.functions.invoke('asaas-create-payment', {
         body: params,
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
       });
 
       if (response.error) {
@@ -67,9 +64,6 @@ export const useAsaasPayments = () => {
 
       const response = await supabase.functions.invoke('asaas-create-customer', {
         body: params,
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
       });
 
       if (response.error) {
