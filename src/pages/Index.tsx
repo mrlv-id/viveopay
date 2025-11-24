@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, BarChart3, Wallet, Zap, Shield, TrendingUp, DollarSign } from "lucide-react";
 import logoViveo from "@/assets/logo-viveo.png";
+import dashboardPreview from "@/assets/dashboard-preview.png";
 import { HeroSection } from "@/components/ui/hero-section-dark";
 
 const Index = () => {
@@ -42,8 +43,8 @@ const Index = () => {
         ctaText="Criar conta gratuita"
         onCtaClick={() => navigate("/auth")}
         bottomImage={{
-          light: logoViveo,
-          dark: logoViveo,
+          light: dashboardPreview,
+          dark: dashboardPreview,
         }}
         gridOptions={{
           angle: 65,
