@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, BarChart3, Wallet, Zap, Shield, TrendingUp, DollarSign } from "lucide-react";
+import { ArrowRight, BarChart3, Wallet, Zap, Shield, TrendingUp, DollarSign, Star, Quote } from "lucide-react";
 import { motion } from "framer-motion";
 import logoViveo from "@/assets/logo-viveo.png";
 import dashboardPreview from "@/assets/dashboard-preview.png";
@@ -243,6 +243,87 @@ const Index = () => {
               </div>
             </Card>
             </motion.div>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* Depoimentos */}
+      <motion.section 
+        className="py-20 md:py-32 relative overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={fadeInUp}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div 
+            className="text-center mb-16 space-y-4"
+            variants={fadeInUp}
+          >
+            <div className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-2">
+              <span className="text-sm text-primary font-medium">Depoimentos</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60">
+              O que nossos psicólogos dizem
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Profissionais que transformaram sua gestão financeira com a Viveo.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            className="grid md:grid-cols-3 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            {[
+              {
+                name: "Dra. Ana Paula Silva",
+                role: "Psicóloga Clínica",
+                content: "A Viveo revolucionou minha prática. Agora consigo focar no que realmente importa: meus pacientes. O controle financeiro ficou automático e profissional.",
+                rating: 5
+              },
+              {
+                name: "Dr. Carlos Mendes",
+                role: "Psicólogo Organizacional",
+                content: "Antes perdia horas organizando planilhas. Com a Viveo, tenho todos os dados em tempo real e posso tomar decisões mais estratégicas para meu consultório.",
+                rating: 5
+              },
+              {
+                name: "Dra. Juliana Costa",
+                role: "Psicóloga Infantil",
+                content: "Os links de pagamento facilitaram muito a vida dos pais dos meus pacientes. Recebo mais rápido e com toda a segurança que preciso.",
+                rating: 5
+              }
+            ].map((testimonial, index) => (
+              <motion.div key={index} variants={fadeInUp}>
+                <Card className="group p-6 bg-card/30 backdrop-blur-sm border-border/30 hover:border-primary/30 transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/10 h-full flex flex-col">
+                  <div className="flex items-center gap-1 mb-4">
+                    {Array.from({ length: testimonial.rating }).map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                    ))}
+                  </div>
+                  <Quote className="h-8 w-8 text-primary/20 mb-4" />
+                  <p className="text-muted-foreground mb-6 flex-grow">
+                    {testimonial.content}
+                  </p>
+                  <div className="flex items-center gap-3 pt-4 border-t border-border/30">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-primary font-semibold text-sm">
+                        {testimonial.name.split(' ')[0][0]}{testimonial.name.split(' ')[testimonial.name.split(' ').length - 1][0]}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">{testimonial.name}</p>
+                      <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </motion.section>
