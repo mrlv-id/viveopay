@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,13 +8,15 @@ const corsHeaders = {
 
 const ASAAS_API_URL = 'https://api.asaas.com/v3';
 
-interface CreatePaymentRequest {
-  serviceId: string;
-  payerName: string;
-  payerEmail: string;
-  payerCpfCnpj?: string;
-  payerPhone?: string;
-}
+const CreatePaymentSchema = z.object({
+  serviceId: z.string().uuid({ message: 'Service ID must be a valid UUID' }),
+  payerName: z.string().min(3, { message: 'Name must be at least 3 characters' }).max(100, { message: 'Name must be less than 100 characters' }),
+  payerEmail: z.string().email({ message: 'Invalid email address' }).max(255, { message: 'Email must be less than 255 characters' }),
+  payerCpfCnpj: z.string().optional(),
+  payerPhone: z.string().optional(),
+});
+
+type CreatePaymentRequest = z.infer<typeof CreatePaymentSchema>;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -39,7 +42,24 @@ Deno.serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { serviceId, payerName, payerEmail, payerCpfCnpj, payerPhone }: CreatePaymentRequest = await req.json();
+    const rawBody = await req.json();
+    
+    // Validate input using Zod schema
+    const validationResult = CreatePaymentSchema.safeParse(rawBody);
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Validation error',
+          details: validationResult.error.errors 
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
+    }
+
+    const { serviceId, payerName, payerEmail, payerCpfCnpj, payerPhone }: CreatePaymentRequest = validationResult.data;
 
     console.log('Criando pagamento para serviço:', serviceId);
 
@@ -48,6 +68,7 @@ Deno.serve(async (req) => {
       .from('services')
       .select('*')
       .eq('id', serviceId)
+      .eq('user_id', user.id) // Verify service belongs to user
       .single();
 
     if (serviceError || !service) {

@@ -1,8 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { createHmac } from 'https://deno.land/std@0.177.0/node/crypto.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, asaas-access-token',
 };
 
 interface AsaasWebhookPayload {
@@ -22,6 +23,13 @@ interface AsaasWebhookPayload {
   };
 }
 
+function verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
+  const hmac = createHmac('sha256', secret);
+  hmac.update(payload);
+  const expectedSignature = hmac.digest('hex');
+  return signature === expectedSignature;
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -30,10 +38,26 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const asaasWebhookToken = Deno.env.get('ASAAS_WEBHOOK_TOKEN');
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   try {
-    const payload: AsaasWebhookPayload = await req.json();
+    // Verify webhook authenticity using Asaas access token
+    const asaasToken = req.headers.get('asaas-access-token');
+    
+    if (asaasWebhookToken && asaasToken !== asaasWebhookToken) {
+      console.error('Invalid webhook token');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }), 
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401,
+        }
+      );
+    }
+
+    const rawBody = await req.text();
+    const payload: AsaasWebhookPayload = JSON.parse(rawBody);
     
     console.log('Webhook recebido:', JSON.stringify(payload, null, 2));
 
