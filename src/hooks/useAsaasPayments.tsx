@@ -25,6 +25,9 @@ export const useAsaasPayments = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
+      console.log('Sessão ativa:', !!session);
+      console.log('Token presente:', !!session?.access_token);
+      
       if (!session) {
         throw new Error('Usuário não autenticado');
       }
@@ -32,6 +35,10 @@ export const useAsaasPayments = () => {
       const response = await supabase.functions.invoke('asaas-create-payment', {
         body: params,
       });
+
+      console.log('Response status:', response.error ? 'error' : 'success');
+      console.log('Response data:', response.data);
+      console.log('Response error:', response.error);
 
       if (response.error) {
         throw response.error;
